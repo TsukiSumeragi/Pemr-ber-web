@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Perhitungan Investasi Jangka Panjang</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .highlight {
+            font-weight: bold;
+            background-color: #e9f7ef;
+        }
+        .highlight-year {
+            font-weight: bold;
+            background-color: #d5f5e3;
+        }
+        .highlight-5year {
+            font-weight: bold;
+            background-color: #abebc6;
+        }
+        .download-btn {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .download-btn:hover {
+            background-color: #3498db;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            margin-top: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #2980b9;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        .summary-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .summary-item {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+        .summary-item h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .summary-item p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #343a40;
+            margin: 5px 0;
+        }
+        .input-section {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .input-item {
+            margin-bottom: 10px;
+        }
+        .input-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-item input, .input-item select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .calculate-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .calculate-btn:hover {
+            background-color: #218838;
+        }
+        @media (max-width: 768px) {
+            .summary-grid, .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .notice {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .instruction {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Perhitungan Investasi Jangka Panjang</h1>
+        
+        <div class="instruction">
+            <h3>Panduan Pengisian:</h3>
+            <ol>
+                <li>PASTIKAN KALIAN SUDAH MAKE A COPY/BUAT SALINAN DARI FILE INI YAAA. Caranya Klik File pada pojok kiri atas dan klik Make a Copy/Buat Salinan.</li>
+                <li>File ini terdiri dari 5 halaman yaitu panduan pengisian, pilihan investasi, perhitungan investasi 5, 10, dan 30 Tahun.</li>
+                <li>Di halaman kedua terdapat pilihan investasi beserta estimasi returnnya yang bisa teman teman pilih. (Jika teman teman ingin menggunakan instrumen investasi lain, sesuaikan dengan returnnya)</li>
+                <li>Teman teman hanya perlu mengisi kolom Jumlah investasi per bulan dan alokasinya saja. (Contoh pengisian ada di bawah)</li>
+                <li>Jika teman teman sudah selesai mengisi, hasil investasi akan otomatis muncul di bawah dan untuk mendapatkan hasil akhir bisa teman teman scroll ke paling bawah.</li>
+                <li>Jika sekiranya target investasi teman teman sudah tercapai, teman teman bisa menuliskan Jumlah uang yang diinvestasikan dan alokasinya pada file Google Docs pada bagian Penyusunan Rencana Investasi.</li>
+            </ol>
+        </div>
+        
+        <div class="input-section">
+            <h3>Masukkan Data Investasi Anda:</h3>
+            <div class="input-grid">
+                <div class="input-item">
+                    <label for="monthlyInvestment">Jumlah Investasi per Bulan (Rp):</label>
+                    <input type="number" id="monthlyInvestment" value="500000" min="10000">
+                </div>
+                <div class="input-item">
+                    <label for="annualReturn">Return Tahunan (%):</label>
+                    <input type="number" id="annualReturn" value="12" min="1" max="30" step="0.1">
+                </div>
+            </div>
+            <button class="calculate-btn" id="calculateBtn">Hitung Ulang</button>
+        </div>
+        
+        <div class="tab">
+            <button class="tablinks" onclick="openPeriod(event, 'PilihanInvestasi')" id="defaultOpen">Pilihan Investasi</button>
+            <button class="tablinks" onclick="openPeriod(event, 'Periode5Tahun')">5 Tahun</button>
+            <button class="tablinks" onclick="openPeriod(event, 'Periode10Tahun')">10 Tahun</button>
+            <button class="tablinks" onclick="openPeriod(event, 'Periode30Tahun')">30 Tahun</button>
+        </div>
+        
+        <div id="PilihanInvestasi" class="tabcontent">
+            <h2>Pilihan Investasi</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Instrumen Investasi</th>
+                        <th>Return Tahunan</th>
+                        <th>Risiko</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IHSG (Indeks Harga Saham Gabungan)</td>
+                        <td>12%</td>
+                        <td>Sedang</td>
+                    </tr>
+                    <tr>
+                        <td>Deposito</td>
+                        <td>4%</td>
+                        <td>Rendah</td>
+                    </tr>
+                    <tr>
+                        <td>Obligasi Pemerintah</td>
+                        <td>6%</td>
+                        <td>Rendah-Sedang</td>
+                    </tr>
+                    <tr>
+                        <td>Reksadana Pasar Uang</td>
+                        <td>5%</td>
+                        <td>Rendah</td>
+                    </tr>
+                    <tr>
+                        <td>Reksadana Pendapatan Tetap</td>
+                        <td>7%</td>
+                        <td>Rendah-Sedang</td>
+                    </tr>
+                    <tr>
+                        <td>Reksadana Campuran</td>
+                        <td>9%</td>
+                        <td>Sedang</td>
+                    </tr>
+                    <tr>
+                        <td>Reksadana Saham</td>
+                        <td>11%</td>
+                        <td>Tinggi</td>
+                    </tr>
+                    <tr>
+                        <td>Emas</td>
+                        <td>8%</td>
+                        <td>Sedang</td>
+                    </tr>
+                    <tr>
+                        <td>Properti</td>
+                        <td>10%</td>
+                        <td>Tinggi</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Grafik Pergerakan IDX Composite (Mar 2024 - Apr 2025)</h3>
+            <div class="chart-container">
+                <canvas id="idxChart"></canvas>
+            </div>
+        </div>
+        
+        <div id="Periode5Tahun" class="tabcontent">
+            <h2>Perhitungan Investasi 5 Tahun</h2>
+            
+            <div class="summary-box">
+                <h3>Ringkasan Investasi 5 Tahun:</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3>Total Investasi</h3>
+                        <p id="totalInvestasi5Tahun">Rp30.000.000</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Total Return</h3>
+                        <p id="totalReturn5Tahun">Rp5.865.298</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Nilai Akhir</h3>
+                        <p id="nilaiAkhir5Tahun">Rp35.865.298</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="investmentChart5Tahun"></canvas>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table id="investmentTable5Tahun">
+                    <thead>
+                        <tr>
+                            <th>Bulan</th>
+                            <th>Setoran</th>
+                            <th>Return Bulanan</th>
+                            <th>Nilai Akhir Bulan</th>
+                            <th>Total Investasi</th>
+                            <th>Total Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody5Tahun">
+                        <!-- Table will be filled dynamically with JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="Periode10Tahun" class="tabcontent">
+            <h2>Perhitungan Investasi 10 Tahun</h2>
+            
+            <div class="summary-box">
+                <h3>Ringkasan Investasi 10 Tahun:</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3>Total Investasi</h3>
+                        <p id="totalInvestasi10Tahun">Rp60.000.000</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Total Return</h3>
+                        <p id="totalReturn10Tahun">Rp27.537.048</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Nilai Akhir</h3>
+                        <p id="nilaiAkhir10Tahun">Rp87.537.048</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="investmentChart10Tahun"></canvas>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table id="investmentTable10Tahun">
+                    <thead>
+                        <tr>
+                            <th>Bulan</th>
+                            <th>Setoran</th>
+                            <th>Return Bulanan</th>
+                            <th>Nilai Akhir Bulan</th>
+                            <th>Total Investasi</th>
+                            <th>Total Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody10Tahun">
+                        <!-- Table will be filled dynamically with JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="Periode30Tahun" class="tabcontent">
+            <h2>Perhitungan Investasi 30 Tahun</h2>
+            
+            <div class="summary-box">
+                <h3>Ringkasan Investasi 30 Tahun:</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3>Total Investasi</h3>
+                        <p id="totalInvestasi30Tahun">Rp180.000.000</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Total Return</h3>
+                        <p id="totalReturn30Tahun">Rp599.700.753</p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Nilai Akhir</h3>
+                        <p id="nilaiAkhir30Tahun">Rp779.700.753</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="investmentChart30Tahun"></canvas>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table id="investmentTable30Tahun">
+                    <thead>
+                        <tr>
+                            <th>Bulan</th>
+                            <th>Setoran</th>
+                            <th>Return Bulanan</th>
+                            <th>Nilai Akhir Bulan</th>
+                            <th>Total Investasi</th>
+                            <th>Total Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody30Tahun">
+                        <!-- Table will be filled dynamically with JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <button class="download-btn" id="downloadExcel">Download Excel Lengkap</button>
+    </div>
+
+    <script>
+        // Global variables
+        let monthlyInvestment = 500000;
+        let annualReturn = 0.12;
+        let monthlyReturn = annualReturn / 12;
+        
+        // Function to format numbers as Indonesian Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+        
+        // Function to calculate investment data for a specific period
+        function calculateInvestment(period) {
+            const labels = [];
+            const investmentData = [];
+            const returnData = [];
+            const totalValueData = [];
+            
+            let tableHTML = '';
+            let totalDeposit = 0;
+            let totalValue = 0;
+            let totalReturnValue = 0;
+            
+            for (let month = 1; month <= period; month++) {
+                // Calculate values
+                totalDeposit += monthlyInvestment;
+                const monthlyReturnValue = totalValue * monthlyReturn;
+                totalReturnValue += monthlyReturnValue;
+                totalValue = totalValue + monthlyInvestment + monthlyReturnValue;
+                
+                // Format for display
+                const formattedDeposit = formatRupiah(monthlyInvestment);
+                const formattedMonthlyReturn = formatRupiah(monthlyReturnValue);
+                const formattedTotalValue = formatRupiah(totalValue);
+                const formattedTotalDeposit = formatRupiah(totalDeposit);
+                const formattedTotalReturn = formatRupiah(totalReturnValue);
+                
+                // Determine row class for highlighting
+                let rowClass = '';
+                if (month % 60 === 0) {
+                    rowClass = 'highlight-5year';
+                } else if (month % 12 === 0) {
+                    rowClass = 'highlight-year';
+                }
+                
+                // Add to table
+                tableHTML += `
+                    <tr class="${rowClass}">
+                        <td>${month}</td>
+                        <td>${formattedDeposit}</td>
+                        <td>${formattedMonthlyReturn}</td>
+                        <td>${formattedTotalValue}</td>
+                        <td>${formattedTotalDeposit}</td>
+                        <td>${formattedTotalReturn}</td>
+                    </tr>
+                `;
+                
+                // Add data for chart (showing yearly data to keep chart readable)
+                if (month % 12 === 0 || month === 1 || month === period) {
+                    let yearLabel = Math.ceil(month / 12);
+                    labels.push(`Tahun ${yearLabel}`);
+                    investmentData.push(totalDeposit);
+                    returnData.push(totalReturnValue);
+                    totalValueData.push(totalValue);
+                }
+            }
+            
+            return {
+                tableHTML,
+                chartData: {
+                    labels,
+                    investmentData,
+                    returnData,
+                    totalValueData
+                },
+                summary: {
+                    totalDeposit,
+                    totalReturnValue,
+                    totalValue
+                }
+            };
+        }
+        
+        // Function to update all investment calculations
+        function updateAllCalculations() {
+            // Get values from input fields
+            monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value) || 500000;
+            annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100 || 0.12;
+            monthlyReturn = annualReturn / 12;
+            
+            // Calculate for 5 years
+            const result5Years = calculateInvestment(60);
+            document.getElementById('tableBody5Tahun').innerHTML = result5Years.tableHTML;
+            document.getElementById('totalInvestasi5Tahun').textContent = formatRupiah(result5Years.summary.totalDeposit);
+            document.getElementById('totalReturn5Tahun').textContent = formatRupiah(result5Years.summary.totalReturnValue);
+            document.getElementById('nilaiAkhir5Tahun').textContent = formatRupiah(result5Years.summary.totalValue);
+            updateChart('investmentChart5Tahun', result5Years.chartData, '5 Tahun');
+            
+            // Calculate for 10 years
+            const result10Years = calculateInvestment(120);
+            document.getElementById('tableBody10Tahun').innerHTML = result10Years.tableHTML;
+            document.getElementById('totalInvestasi10Tahun').textContent = formatRupiah(result10Years.summary.totalDeposit);
+            document.getElementById('totalReturn10Tahun').textContent = formatRupiah(result10Years.summary.totalReturnValue);
+            document.getElementById('nilaiAkhir10Tahun').textContent = formatRupiah(result10Years.summary.totalValue);
+            updateChart('investmentChart10Tahun', result10Years.chartData, '10 Tahun');
+            
+            // Calculate for 30 years
+            const result30Years = calculateInvestment(360);
+            document.getElementById('tableBody30Tahun').innerHTML = result30Years.tableHTML;
+            document.getElementById('totalInvestasi30Tahun').textContent = formatRupiah(result30Years.summary.totalDeposit);
+            document.getElementById('totalReturn30Tahun').textContent = formatRupiah(result30Years.summary.totalReturnValue);
+            document.getElementById('nilaiAkhir30Tahun').textContent = formatRupiah(result30Years.summary.totalValue);
+            updateChart('investmentChart30Tahun', result30Years.chartData, '30 Tahun');
+        }
+        
+        // Function to update chart
+        function updateChart(chartId, data, periodText) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            
+            // Destroy previous chart if exists
+            if (window[chartId]) {
+                window[chartId].destroy();
+            }
+            
+            window[chartId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Total Nilai Investasi',
+                            data: data.totalValueData,
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Total Setoran',
+                            data: data.investmentData,
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Total Return',
+                            data: data.returnData,
+                            backgroundColor: 'rgba(241, 196, 15, 0.2)',
+                            borderColor: 'rgba(241, 196, 15, 1)',
+                            borderWidth: 2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatRupiah(value).replace('Rp', 'Rp ');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Proyeksi Pertumbuhan Investasi (${periodText})`
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatRupiah(context.raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Function to create IDX Composite chart
+        function createIDXChart() {
+            const idxData = [
+                ["Mar 2024", 7084.77],
+                ["Apr 2024", 7236.81],
+                ["May 2024", 7312.45],
+                ["Jun 2024", 7198.52],
+                ["Jul 2024", 7345.78],
+                ["Aug 2024", 7401.23],
+                ["Sep 2024", 7455.91],
+                ["Oct 2024", 7532.48],
+                ["Nov 2024", 7634.12],
+                ["Dec 2024", 7712.87],
+                ["Jan 2025", 7823.45],
+                ["Feb 2025", 7876.32],
+                ["Mar 2025", 7935.67],
+                ["Apr 2025", 8012.43]
+            ];
+            
+            const labels = idxData.map(item => item[0]);
+            const values = idxData.map(item => item[1]);
+            
+            const ctx = document.getElementById('idxChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'IDX Composite',
+                        data: values,
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pergerakan IDX Composite (Mar 2024 - Apr 2025)'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Function to download Excel file
+        document.getElementById('downloadExcel').addEventListener('click', function() {
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Add sheet "Panduan Pengisian"
+            const panduanData = [
+                ["Panduan Pengisian"],
+                [""],
+                ["1. PASTIKAN KALIAN SUDAH MAKE A COPY/BUAT SALINAN DARI FILE INI YAAA. Caranya Klik File pada pojok kiri atas dan klik Make a Copy/Buat Salinan."],
+                ["2. File ini terdiri dari 5 halaman yaitu panduan pengisian, pilihan investasi, perhitungan investasi 5, 10, dan 30 Tahun."],
+                ["3. Di halaman kedua terdapat pilihan investasi beserta estimasi returnnya yang bisa teman teman pilih. (Jika teman teman ingin menggunakan instrumen investasi lain, sesuaikan dengan returnnya)"],
+                ["4. Teman teman hanya perlu mengisi kolom Jumlah investasi per bulan dan alokasinya saja. (Contoh pengisian ada di bawah)"],
+                ["5. Jika teman teman sudah selesai mengisi, hasil investasi akan otomatis muncul di bawah dan untuk mendapatkan hasil akhir bisa teman teman scroll ke paling bawah."],
+                ["6. Jika sekiranya target investasi teman teman sudah tercapai, teman teman bisa menuliskan Jumlah uang yang diinvestasikan dan alokasinya pada file Google Docs pada bagian Penyusunan Rencana Investasi."]
+            ];
+            const wsPanduan = XLSX.utils.aoa_to_sheet(panduanData);
+            XLSX.utils.book_append_sheet(wb, wsPanduan, "Panduan Pengisian");
+            
+            // Add sheet "Pilihan Investasi"
+            const pilihanData = [
+                ["Instrumen Investasi", "Return Tahunan", "Risiko"],
+                ["IHSG (Indeks Harga Saham Gabungan)", "12%", "Sedang"],
+                ["Deposito", "4%", "Rendah"],
+                ["Obligasi Pemerintah", "6%", "Rendah-Sedang"],
+                ["Reksadana Pasar Uang", "5%", "Rendah"],
+                ["Reksadana Pendapatan Tetap", "7%", "Rendah-Sedang"],
+                ["Reksadana Campuran", "9%", "Sedang"],
+                ["Reksadana Saham", "11%", "Tinggi"],
+                ["Emas", "8%", "Sedang"],
+                ["Properti", "10%", "Tinggi"]
+            ];
+            const wsPilihan = XLSX.utils.aoa_to_sheet(pilihanData);
+            XLSX.utils.book_append_sheet(wb, wsPilihan, "Pilihan Investasi");
+            
+            // Add sheet "IDX Composite"
+            const idxData = [
+                ["Tanggal", "IDX Composite"],
+                ["Mar 2024", 7084.77],
+                ["Apr 2024", 7236.81],
+                ["May 2024", 7312.45],
+                ["Jun 2024", 7198.52],
+                ["Jul 2024", 7345.78],
+                ["Aug 2024", 7401.23],
+                ["Sep 2024", 7455.91],
+                ["Oct 2024", 7532.48],
+                ["Nov 2024", 7634.12],
+                ["Dec 2024", 7712.87],
+                ["Jan 2025", 7823.45],
+                ["Feb 2025", 7876.32],
+                ["Mar 2025", 7935.67],
+                ["Apr 2025", 8012.43]
+            ];
+            const wsIDX = XLSX.utils.aoa_to_sheet(idxData);
+            XLSX.utils.book_append_sheet(wb, wsIDX, "IDX Composite");
+            
+            // Function to create data for investment calculation sheet
+            function createInvestmentSheetData(period) {
+                const wsData = [["Bulan", "Setoran", "Return Bulanan", "Nilai Akhir Bulan", "Total Investasi", "Total Return"]];
+                
+                let totalDeposit = 0;
+                let totalValue = 0;
+                let totalReturnValue = 0;
+                
+                for (let month = 1; month <= period; month++) {
+                    totalDeposit += monthlyInvestment;
+                    const monthlyReturnValue = totalValue * monthlyReturn;
+                    totalReturnValue += monthlyReturnValue;
+                    totalValue = totalValue + monthlyInvestment + monthlyReturnValue;
+                    
+                    wsData.push([
+                        month,
+                        monthlyInvestment,
+                        monthlyReturnValue,
+                        totalValue,
+                        totalDeposit,
+                        totalReturnValue
+                    ]);
+                }
+                
+                return wsData;
+            }
+            
+            // Format numbers as currency for Excel
+            function formatExcelSheet(ws) {
+                const currencyFormat = '#,##0" Rp"';
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                
+                for (let col = 1; col <= 5; col++) {
+                    for (let row = 1; row <= range.e.r; row++) {
+                        const cellAddress = XLSX.utils.encode_cell({r: row, c: col});
+                        if (!ws[cellAddress]) continue;
+                        ws[cellAddress].z = currencyFormat;
+                    }
+                }
+                
+                return ws;
+            }
+            
+            // Add sheet "Perhitungan Investasi 5 Tahun"
+            const wsData5Years = createInvestmentSheetData(60);
+            const ws5Years = XLSX.utils.aoa_to_sheet(wsData5Years);
+            formatExcelSheet(ws5Years);
+            XLSX.utils.book_append_sheet(wb, ws5Years, "Perhitungan Investasi 5 Tahun");
+            
+            // Add sheet "Perhitungan Investasi 10 Tahun"
+            const wsData10Years = createInvestmentSheetData(120);
+            const ws10Years = XLSX.utils.aoa_to_sheet(wsData10Years);
+            formatExcelSheet(ws10Years);
+            XLSX.utils.book_append_sheet(wb, ws10Years, "Perhitungan Investasi 10 Tahun");
+            
+            // Add sheet "Perhitungan Investasi 30 Tahun"
+            const wsData30Years = createInvestmentSheetData(360);
+            const ws30Years = XLSX.utils.aoa_to_sheet(wsData30Years);
+            formatExcelSheet(ws30Years);
+            XLSX.utils.book_append_sheet(wb, ws30Years, "Perhitungan Investasi 30 Tahun");
+            
+            // Save Excel file
+            XLSX.writeFile(wb, "Investasi_Lengkap.xlsx");
+        });
+        
+        // Tab handling functions
+        function openPeriod(evt, periodName) {
+            // Declare all variables
+            let i, tabcontent, tablinks;
+            
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(periodName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Event listener for the calculate button
+        document.getElementById('calculateBtn').addEventListener('click', updateAllCalculations);
+        
+        // Initialize charts and tables when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open the default tab on load
+            document.getElementById("defaultOpen").click();
+            
+            // Create IDX Composite chart
+            createIDXChart();
+            
+            // Initialize all calculations
+            updateAllCalculations();
+        });
+    </script>
+</body>
+</html>

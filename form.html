@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Pendaftaran</title>
+</head>
+<body>
+    <form action="process.php" method="post">
+        Nama: <input type="text" name="txtnama" size="30" maxlength="25"><br>
+        Email: <input type="text" name="txtemail"><br>
+        Jurusan:
+        <select name="jur">
+            <option value="SI">Sistem Informasi</option>
+            <option value="TI">Teknologi Informasi</option>
+            <option value="SE">Software Engineering</option>
+        </select><br>
+        Tingkatan Semester:
+        <input type="radio" name="rdk" value="1">1
+        <input type="radio" name="rdk" value="2">2
+        <input type="radio" name="rdk" value="3">3<br>
+        Kota:
+        <select name="skota" size="3">
+            <option value="JKT">JAKARTA</option>
+            <option value="BDG">BANDUNG</option>
+            <option value="TNG">TANGERANG</option>
+            <option value="BGR">BOGOR</option>
+        </select><br>
+        <input type="submit" value="Daftar">
+        <input type="reset" value="Batal">
+    </form>
+</body>
+</html>
