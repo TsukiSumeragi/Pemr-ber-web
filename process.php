@@ -1,13 +1,22 @@
 <?php
-$nama = $_POST['txtnama'];
-$email = $_POST['txtemail'];
-$jurusan = $_POST['jur'];
-$kelas = $_POST['rdk'];
-$kota = $_POST['skota'];
+if (isset($_POST["jumlah"])) {
+    $jumlah = $_POST["jumlah"];
+    $kelas = $_POST["kelas"];
+    $ongkos = 0;
 
-echo "Nama =" . $nama . "<br>";
-echo "Email =" . $email . "<br>";
-echo "Jurusan =" . $jurusan . "<br>";
-echo "Kelas =" . $kelas . "<br>";
-echo "Kota =" . $kota . "<br>";
+    if ($kelas == "vvip") {
+        $ongkos = 400000;
+    } elseif ($kelas == "vip") {
+        $ongkos = 300000;
+    } elseif ($kelas == "bisnis") {
+        $ongkos = 200000;
+    } else {
+        $ongkos = 100000;
+    }
+
+    if ($ongkos > 0) {
+        $total = $jumlah * $ongkos;
+        echo "<h3>Total Bayar: Rp " . number_format($total, decimals: 0, decimal_separator: ',', thousands_separator: '.') . "</h3>";
+    }
+}
 ?>

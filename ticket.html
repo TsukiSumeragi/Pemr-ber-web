@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h2>Ticket Form</h2>
+    <form action="process.php" method="POST">
+        <p>Jumlah Tiket: <input type="number" name="jumlah"></p>
+        
+        <p>Pilih Kelas:</p>
+        <input type="radio" name="kelas" value="vvip">VVIP (Rp 400.000)<br>
+        <input type="radio" name="kelas" value="vip">VIP (Rp 300.000)<br>
+        <input type="radio" name="kelas" value="bisnis">Bisnis (Rp 200.000)<br>
+        <input type="radio" name="kelas" value="ekonomi">Ekonomi (Rp 100.000)<br>
+        
+        <p><input type="submit" value="Hitung Total"></p>
+    </form>
+</body>
+</html>
